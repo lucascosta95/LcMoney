@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { PrimeNGConfig } from 'primeng/api';
 
@@ -7,10 +8,11 @@ import { PrimeNGConfig } from 'primeng/api';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent {
+export class AppComponent implements OnInit{
   title = 'lcmoney-ui';
 
   constructor(
+    private router: Router,
     private config: PrimeNGConfig, 
     private translateService: TranslateService
   ) {}
@@ -19,6 +21,10 @@ export class AppComponent {
     this.translateService.setDefaultLang('pt');
     this.translateService.get('primeng')
       .subscribe(res => this.config.setTranslation(res));
+  }
+
+  exibirNavBar(){
+    return this.router.url !== '/login';
   }
  
 }

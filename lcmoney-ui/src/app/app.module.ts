@@ -12,6 +12,7 @@ import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core';
 import { registerLocaleData } from '@angular/common';
 import localePt from '@angular/common/locales/pt';
+import { SegurancaModule } from './seguranca/seguranca.module';
 
 registerLocaleData(localePt, 'pt-BR');
 
@@ -28,6 +29,7 @@ export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
     PessoasModule,
     LancamentosModule, 
     CoreModule,
+    SegurancaModule,
     AppRoutingModule,
 
     TranslateModule.forRoot({
