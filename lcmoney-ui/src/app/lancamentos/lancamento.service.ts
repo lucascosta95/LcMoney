@@ -1,14 +1,14 @@
 import { DatePipe } from '@angular/common';
-import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Lancamento } from '../core/model';
 
-export class LancamentosFiltro{
+export class LancamentosFiltro {
   descricao: string = '';
-  dataVencimentoInicio? : Date;
-  dataVencimentoFim? : Date;
-  pagina = 0
-  itensPorPagina = 5
+  dataVencimentoInicio?: Date;
+  dataVencimentoFim?: Date;
+  pagina = 0;
+  itensPorPagina = 5;
 }
 
 @Injectable({
@@ -21,10 +21,6 @@ export class LancamentoService {
 
   pesquisar(filtro: LancamentosFiltro): Promise<any> {
     let params = new HttpParams();
-    const headers = new HttpHeaders().append(
-      'Authorization',
-      'Basic YWRtaW5AbGNtb25leS5jb206YWRtaW4='
-    );
 
     params = params.set('page', filtro.pagina);
     params = params.set('size', filtro.itensPorPagina);
@@ -48,7 +44,7 @@ export class LancamentoService {
     }
 
     return this.http
-      .get(`${this.lancamentosURL}?resumo`, { headers, params })
+      .get(`${this.lancamentosURL}?resumo`, { params })
       .toPromise()
       .then((response: any) => {
         const lancamentos = response['content'];
@@ -63,22 +59,13 @@ export class LancamentoService {
   }
 
   excluir(id: number): Promise<void> {
-    const headers = new HttpHeaders().append(
-      'Authorization',
-      'Basic YWRtaW5AbGNtb25leS5jb206YWRtaW4='
-    );
-
     return this.http
-      .delete(`${this.lancamentosURL}/${id}`, { headers })
+      .delete(`${this.lancamentosURL}/${id}`)
       .toPromise()
       .then(() => undefined);
   }
 
   adicionar(lancamento: Lancamento) {
-    const headers = new HttpHeaders()
-      .append('Authorization', 'Basic YWRtaW5AbGNtb25leS5jb206YWRtaW4=')
-      .append('Content-Type', 'application/json');
-
     const dataVencimentoFormatada = this.datePipe.transform(
       lancamento.dataVencimento,
       'dd/MM/yyyy'
@@ -95,15 +82,11 @@ export class LancamentoService {
     };
 
     return this.http
-      .post<Lancamento>(this.lancamentosURL, lancamentoFormatado, { headers })
+      .post<Lancamento>(this.lancamentosURL, lancamentoFormatado)
       .toPromise();
   }
 
   atualizar(lancamento: Lancamento) {
-    const headers = new HttpHeaders()
-      .append('Authorization', 'Basic YWRtaW5AbGNtb25leS5jb206YWRtaW4=')
-      .append('Content-Type', 'application/json');
-
     const dataVencimentoFormatada = this.datePipe.transform(
       lancamento.dataVencimento,
       'dd/MM/yyyy'
@@ -120,17 +103,16 @@ export class LancamentoService {
     };
 
     return this.http
-      .put<Lancamento>(`${this.lancamentosURL}/${lancamento.id}`, lancamentoFormatado, { headers })
+      .put<Lancamento>(
+        `${this.lancamentosURL}/${lancamento.id}`,
+        lancamentoFormatado
+      )
       .toPromise();
   }
 
   buscarPorCodigo(id: number): Promise<Lancamento> {
-    const headers = new HttpHeaders()
-      .append('Authorization', 'Basic YWRtaW5AbGNtb25leS5jb206YWRtaW4=')
-      .append('Content-Type', 'application/json');
-
     return this.http
-      .get(`${this.lancamentosURL}/${id}`, { headers })
+      .get(`${this.lancamentosURL}/${id}`)
       .toPromise()
       .then((response: any) => {
         this.converterStringsParaDatas([response]);
@@ -141,12 +123,15 @@ export class LancamentoService {
 
   private converterStringsParaDatas(lancamentos: Lancamento[]) {
     for (const lancamento of lancamentos) {
-
       if (lancamento.dataVencimento)
-        lancamento.dataVencimento = this.converterStringToDate(lancamento.dataVencimento);
+        lancamento.dataVencimento = this.converterStringToDate(
+          lancamento.dataVencimento
+        );
 
       if (lancamento.dataPagamento)
-        lancamento.dataPagamento = this.converterStringToDate(lancamento.dataPagamento);
+        lancamento.dataPagamento = this.converterStringToDate(
+          lancamento.dataPagamento
+        );
     }
   }
 

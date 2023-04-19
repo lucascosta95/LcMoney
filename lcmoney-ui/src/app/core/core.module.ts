@@ -12,6 +12,8 @@ import { TranslateService } from '@ngx-translate/core';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { PaginaNaoEncontradaComponent } from './pagina-nao-encontrada.component';
 import { Title } from '@angular/platform-browser';
+import { AuthService } from '../seguranca/auth.service';
+import { JwtHelperService } from '@auth0/angular-jwt';
 
 registerLocaleData(localePt, 'pt-BR');
 
@@ -34,6 +36,8 @@ registerLocaleData(localePt, 'pt-BR');
   ],
   providers: [
     ErrorHandlerService,
+    AuthService,
+    JwtHelperService,
     Title,
     LancamentoService,
     TranslateService,
