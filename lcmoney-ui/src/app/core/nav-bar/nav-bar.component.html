@@ -11,7 +11,6 @@
     <li class="navbar-usuario">{{usuarioLogado}}</li>
     <li class="navbar-menuitem" routerLinkActive="ativo" *ngIf="verificarPemissao('ROLE_PESQUISAR_LANCAMENTO')"><a routerLink ="/lancamentos">Lançamentos</a></li>
     <li class="navbar-menuitem" routerLinkActive="ativo" *ngIf="verificarPemissao('ROLE_PESQUISAR_PESSOA')"><a routerLink ="/pessoas">Pessoas</a></li>
-    <li class="navbar-menuitem"><a href="#">Logout</a></li>
+    <li class="navbar-menuitem"><a href="#" (click)="logout()">Logout</a></li>
   </ul>
-
 </nav>
