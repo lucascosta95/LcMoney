@@ -15,4 +15,9 @@ export class NavBarComponent implements OnInit {
   ngOnInit() {
     this.usuarioLogado = this.auth.jwtPayload?.nome;
   }
+
+  verificarPemissao(permissao: string){
+    return this.auth.isPermissao(permissao);
+  }
+
 }

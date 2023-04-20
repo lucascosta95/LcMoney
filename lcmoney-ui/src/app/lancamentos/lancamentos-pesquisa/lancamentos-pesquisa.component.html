@@ -67,7 +67,7 @@
               <span class="p-column-title"></span>
               <span>
               <a pButton icon="pi pi-pencil" [routerLink]="['/lancamentos', lancamentos.id]" pTooltip="Editar" tooltipPosition="top"></a>
-              <button pButton icon="pi pi-trash" pTooltip="Excluir" tooltipPosition="top" (click)="confirmarExclusao(lancamentos)"></button>
+              <button pButton icon="pi pi-trash" pTooltip="Excluir" tooltipPosition="top" (click)="confirmarExclusao(lancamentos)" [disabled]="!isPermissao('ROLE_REMOVER_LANCAMENTO')"></button>
             </span>
             </td>
         </tr>

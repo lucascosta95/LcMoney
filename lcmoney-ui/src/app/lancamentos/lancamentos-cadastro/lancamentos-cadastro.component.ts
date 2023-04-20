@@ -5,7 +5,7 @@ import { PessoasService } from './../../pessoas/pessoas.service';
 import { ErrorHandlerService } from './../../core/error-handler.service';
 import { CategoriaService } from './../../categorias/categoria.service';
 import { Component, OnInit } from '@angular/core';
-import { FormControl, NgForm } from '@angular/forms';
+import { NgForm } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Title } from '@angular/platform-browser';
 
@@ -92,7 +92,6 @@ export class LancamentosCadastroComponent implements OnInit {
   carregarLancamento(id: number){
     this.lancamentoService.buscarPorCodigo(id).then(lancamento => {
       this.lancamento = lancamento
-      console.log(lancamento)
     }).catch(erro => this.errorHandlerService.handle(erro))
   }
 

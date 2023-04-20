@@ -4,6 +4,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ConfirmationService, LazyLoadEvent, MessageService } from 'primeng/api';
 import { Table } from 'primeng/table';
+import { AuthService } from 'src/app/seguranca/auth.service';
 
 @Component({
   selector: 'app-pessoas-pesquisa',
@@ -22,6 +23,7 @@ export class PessoasPesquisaComponent implements OnInit {
     private confirmationService: ConfirmationService,
     private errorHandlerService: ErrorHandlerService,
     private title: Title,
+    private auth: AuthService,
   ) {}
 
   ngOnInit(): void {
@@ -82,5 +84,9 @@ export class PessoasPesquisaComponent implements OnInit {
         detail: 'Status Alterado com sucesso!',
       });
     }).catch(erro => this.errorHandlerService.handle(erro));
+  }
+
+  isPermissao(permissao: string){
+    return this.auth.isPermissao(permissao);
   }
 }

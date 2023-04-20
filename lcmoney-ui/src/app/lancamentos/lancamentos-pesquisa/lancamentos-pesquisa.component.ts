@@ -4,6 +4,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { LazyLoadEvent, MessageService, ConfirmationService } from 'primeng/api';
 import { Table } from 'primeng/table';
+import { AuthService } from 'src/app/seguranca/auth.service';
 
 @Component({
   selector: 'app-lancamentos-pesquisa',
@@ -23,6 +24,7 @@ export class LancamentosPesquisaComponent implements OnInit {
     private confirmationService: ConfirmationService,
     private errorHandlerService: ErrorHandlerService,
     private title: Title,
+    private auth: AuthService,
   ) {}
 
   ngOnInit() {
@@ -64,6 +66,10 @@ export class LancamentosPesquisaComponent implements OnInit {
         detail: 'Lançamento excluído!',
       });
     }).catch(erro => this.errorHandlerService.handle(erro));
+  }
+
+  isPermissao(permissao: string){
+    return this.auth.isPermissao(permissao);
   }
 }
 

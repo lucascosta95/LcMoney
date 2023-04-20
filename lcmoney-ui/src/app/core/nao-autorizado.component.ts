@@ -3,24 +3,23 @@ import { Component, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 
 @Component({
-  selector: 'app-pagina-nao-encontrada',
   template: `
     <div class="container">
-      <h1 class="text-center">Página não encontrada</h1>
+      <h1 class="text-center">Acesso Negado!</h1>
     <div>
   `,
   styles: [
 
   ]
 })
-export class PaginaNaoEncontradaComponent implements OnInit {
+export class NaoAutorizadoComponent implements OnInit {
 
   constructor(
     private title: Title
     ) { }
 
   ngOnInit(){
-    this.title.setTitle('Página não encontrada');
+    this.title.setTitle('Acesso Negado');
   }
 
 }
