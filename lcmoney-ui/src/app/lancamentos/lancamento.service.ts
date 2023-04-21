@@ -2,6 +2,7 @@ import { DatePipe } from '@angular/common';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Lancamento } from '../core/model';
+import { environment } from 'src/environments/environment';
 
 export class LancamentosFiltro {
   descricao: string = '';
@@ -15,9 +16,11 @@ export class LancamentosFiltro {
   providedIn: 'root',
 })
 export class LancamentoService {
-  lancamentosURL = 'http://localhost:8080/lancamentos';
+  lancamentosURL!: string;
 
-  constructor(private http: HttpClient, private datePipe: DatePipe) {}
+  constructor(private http: HttpClient, private datePipe: DatePipe) {
+    this.lancamentosURL = `${environment.apiURL}/lancamentos`
+  }
 
   pesquisar(filtro: LancamentosFiltro): Promise<any> {
     let params = new HttpParams();

@@ -1,13 +1,14 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { JwtHelperService } from '@auth0/angular-jwt';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  oauthTokenURL = 'http://localhost:8080/oauth/token';
-  tokenRevokeURL = 'http://localhost:8080/tokens/revoke';
+  oauthTokenURL!: string;
+  tokenRevokeURL!: string;
   jwtPayload: any;
 
   constructor(
@@ -15,6 +16,8 @@ export class AuthService {
     private jwtHelper: JwtHelperService,
     ) {
     this.carregarToken();
+    this.oauthTokenURL = `${environment.apiURL}/oauth/token`;
+    this.tokenRevokeURL = `${environment.apiURL}/tokens/revoke`;
   }
 
   login(usuario: string, senha: string): Promise<void> {
@@ -73,8 +76,7 @@ export class AuthService {
       .then((response: any) => {
         this.armazenarToken(response['access_token']);
       })
-      .catch((response) => {
-        console.log('Erro ao renovar', response);
+      .catch(() => {
         return Promise.resolve(undefined);
       });
   }
