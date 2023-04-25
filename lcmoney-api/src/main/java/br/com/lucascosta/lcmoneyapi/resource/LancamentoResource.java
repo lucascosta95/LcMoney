@@ -1,5 +1,7 @@
 package br.com.lucascosta.lcmoneyapi.resource;
 
+import br.com.lucascosta.lcmoneyapi.dto.LancamentosEstatisticaCategoria;
+import br.com.lucascosta.lcmoneyapi.dto.LancamentosEstatisticaDia;
 import br.com.lucascosta.lcmoneyapi.event.RecursoCriadoEvent;
 import br.com.lucascosta.lcmoneyapi.model.Lancamento;
 import br.com.lucascosta.lcmoneyapi.repository.LancamentoRepository;
@@ -17,6 +19,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.time.LocalDate;
+import java.util.List;
 
 @RestController
 @RequestMapping("/lancamentos")
@@ -76,6 +80,20 @@ public class LancamentoResource {
         } catch (IllegalArgumentException e) {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    // Estatisticas
+
+    @GetMapping("/estatisticas/por-categoria")
+    @PreAuthorize("hasAuthority('ROLE_PESQUISAR_LANCAMENTO') and hasAuthority('SCOPE_read')")
+    public List<LancamentosEstatisticaCategoria> porCategoria (){
+        return this.lancamentoRepository.porCategoria(LocalDate.now());
+    }
+
+    @GetMapping("/estatisticas/por-dia")
+    @PreAuthorize("hasAuthority('ROLE_PESQUISAR_LANCAMENTO') and hasAuthority('SCOPE_read')")
+    public List<LancamentosEstatisticaDia> porDia (){
+        return this.lancamentoRepository.porDia(LocalDate.now());
     }
 
 }

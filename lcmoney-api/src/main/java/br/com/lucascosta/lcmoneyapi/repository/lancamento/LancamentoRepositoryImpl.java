@@ -1,5 +1,7 @@
 package br.com.lucascosta.lcmoneyapi.repository.lancamento;
 
+import br.com.lucascosta.lcmoneyapi.dto.LancamentosEstatisticaCategoria;
+import br.com.lucascosta.lcmoneyapi.dto.LancamentosEstatisticaDia;
 import br.com.lucascosta.lcmoneyapi.model.Categoria_;
 import br.com.lucascosta.lcmoneyapi.model.Lancamento;
 import br.com.lucascosta.lcmoneyapi.model.Lancamento_;
@@ -18,6 +20,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -111,5 +114,54 @@ public class LancamentoRepositoryImpl implements LancamentoRepositoryQuery {
         return manager.createQuery(criteria).getSingleResult();
     }
 
+
+    public List<LancamentosEstatisticaCategoria> porCategoria(LocalDate mesReferencia) {
+        CriteriaBuilder builder = manager.getCriteriaBuilder();
+        CriteriaQuery<LancamentosEstatisticaCategoria> criteria = builder.createQuery(LancamentosEstatisticaCategoria.class);
+
+        Root<Lancamento> root = criteria.from(Lancamento.class);
+        criteria.select(builder.construct(LancamentosEstatisticaCategoria.class, root.get(Lancamento_.categoria), builder.sum(root.get(Lancamento_.valor))));
+
+        LocalDate primeiroDia = mesReferencia.withDayOfMonth(1);
+        LocalDate ultimoDia = mesReferencia.withDayOfMonth(mesReferencia.lengthOfMonth());
+
+        criteria.where(
+                builder.greaterThanOrEqualTo(root.get(Lancamento_.dataVencimento), primeiroDia),
+                builder.lessThanOrEqualTo(root.get(Lancamento_.dataVencimento), ultimoDia)
+        );
+
+        criteria.groupBy(root.get(Lancamento_.categoria));
+
+        TypedQuery<LancamentosEstatisticaCategoria> typedQuery = manager.createQuery(criteria);
+
+        return typedQuery.getResultList();
+    }
+
+    public List<LancamentosEstatisticaDia> porDia(LocalDate mesReferencia) {
+        CriteriaBuilder builder = manager.getCriteriaBuilder();
+        CriteriaQuery<LancamentosEstatisticaDia> criteria = builder.createQuery(LancamentosEstatisticaDia.class);
+
+        Root<Lancamento> root = criteria.from(Lancamento.class);
+        criteria.select(builder.construct(LancamentosEstatisticaDia.class,
+                root.get(Lancamento_.tipo),
+                root.get(Lancamento_.dataVencimento),
+                builder.sum(root.get(Lancamento_.valor))));
+
+        LocalDate primeiroDia = mesReferencia.withDayOfMonth(1);
+        LocalDate ultimoDia = mesReferencia.withDayOfMonth(mesReferencia.lengthOfMonth());
+
+        criteria.where(
+                builder.greaterThanOrEqualTo(root.get(Lancamento_.dataVencimento), primeiroDia),
+                builder.lessThanOrEqualTo(root.get(Lancamento_.dataVencimento), ultimoDia)
+        );
+
+        criteria.groupBy(
+                root.get(Lancamento_.tipo),
+                root.get(Lancamento_.dataVencimento));
+
+        TypedQuery<LancamentosEstatisticaDia> typedQuery = manager.createQuery(criteria);
+
+        return typedQuery.getResultList();
+    }
 
 }
