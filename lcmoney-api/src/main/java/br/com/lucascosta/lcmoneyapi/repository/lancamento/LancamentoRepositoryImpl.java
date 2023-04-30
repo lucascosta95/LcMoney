@@ -2,6 +2,7 @@ package br.com.lucascosta.lcmoneyapi.repository.lancamento;
 
 import br.com.lucascosta.lcmoneyapi.dto.LancamentosEstatisticaCategoria;
 import br.com.lucascosta.lcmoneyapi.dto.LancamentosEstatisticaDia;
+import br.com.lucascosta.lcmoneyapi.dto.LancamentosEstatisticaPessoa;
 import br.com.lucascosta.lcmoneyapi.model.Categoria_;
 import br.com.lucascosta.lcmoneyapi.model.Lancamento;
 import br.com.lucascosta.lcmoneyapi.model.Lancamento_;
@@ -160,6 +161,31 @@ public class LancamentoRepositoryImpl implements LancamentoRepositoryQuery {
                 root.get(Lancamento_.dataVencimento));
 
         TypedQuery<LancamentosEstatisticaDia> typedQuery = manager.createQuery(criteria);
+
+        return typedQuery.getResultList();
+    }
+
+
+    public List<LancamentosEstatisticaPessoa> porPessoa(LocalDate inicio, LocalDate fim) {
+        CriteriaBuilder builder = manager.getCriteriaBuilder();
+        CriteriaQuery<LancamentosEstatisticaPessoa> criteria = builder.createQuery(LancamentosEstatisticaPessoa.class);
+
+        Root<Lancamento> root = criteria.from(Lancamento.class);
+        criteria.select(builder.construct(LancamentosEstatisticaPessoa.class,
+                root.get(Lancamento_.tipo),
+                root.get(Lancamento_.pessoa),
+                builder.sum(root.get(Lancamento_.valor))));
+
+        criteria.where(
+                builder.greaterThanOrEqualTo(root.get(Lancamento_.dataVencimento), inicio),
+                builder.lessThanOrEqualTo(root.get(Lancamento_.dataVencimento), fim)
+        );
+
+        criteria.groupBy(
+                root.get(Lancamento_.tipo),
+                root.get(Lancamento_.pessoa));
+
+        TypedQuery<LancamentosEstatisticaPessoa> typedQuery = manager.createQuery(criteria);
 
         return typedQuery.getResultList();
     }

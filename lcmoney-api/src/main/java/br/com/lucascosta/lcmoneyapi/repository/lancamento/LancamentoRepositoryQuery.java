@@ -2,6 +2,7 @@ package br.com.lucascosta.lcmoneyapi.repository.lancamento;
 
 import br.com.lucascosta.lcmoneyapi.dto.LancamentosEstatisticaCategoria;
 import br.com.lucascosta.lcmoneyapi.dto.LancamentosEstatisticaDia;
+import br.com.lucascosta.lcmoneyapi.dto.LancamentosEstatisticaPessoa;
 import br.com.lucascosta.lcmoneyapi.model.Lancamento;
 import br.com.lucascosta.lcmoneyapi.repository.filter.LancamentoFilter;
 import br.com.lucascosta.lcmoneyapi.repository.projection.ResumoLancamento;
@@ -18,4 +19,5 @@ public interface LancamentoRepositoryQuery {
 
     public List<LancamentosEstatisticaCategoria> porCategoria(LocalDate mesReferencia);
     public List<LancamentosEstatisticaDia> porDia(LocalDate mesReferencia);
+    public List<LancamentosEstatisticaPessoa> porPessoa(LocalDate inicio, LocalDate fim);
 }
