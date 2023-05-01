@@ -9,6 +9,7 @@ import br.com.lucascosta.lcmoneyapi.service.exception.PessoaInexistenteOuInativa
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.io.InputStream;
@@ -77,5 +78,16 @@ public class LancamentoService {
         JasperPrint jasperPrint = JasperFillManager.fillReport(inputStream, parametros,
                 new JRBeanCollectionDataSource(dados));
         return JasperExportManager.exportReportToPdf(jasperPrint);
+    }
+
+    /**
+     * Agendamento de tarefa, o metodo cron() tem como parametros (" Segundo, Minuto, Hora, Dia, Mês, Dia da Semana ")
+     * Logo no agendamento abaixo seria, executar esse metodo, dia 08 as 06:00 da manha de todos os meses.
+     * Considerando que o vencimento é dia 05 de cada mês, o usuario será notificado 3 dias após o vencimento.
+     */
+
+    @Scheduled(cron = "0 0 6 8 * *")
+    public void notificarLancamentosVencidos(){
+
     }
 }

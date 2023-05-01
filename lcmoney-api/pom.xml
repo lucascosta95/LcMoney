@@ -124,6 +124,13 @@
 			<version>${jasperreports-fonts.version}</version>
 		</dependency>
 
+		<!-- Email -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-mail</artifactId>
+			<version>3.0.4</version>
+		</dependency>
+
 	</dependencies>
 
 	<build>
