@@ -1,10 +1,13 @@
 package br.com.lucascosta.lcmoneyapi.service;
 
 import br.com.lucascosta.lcmoneyapi.dto.LancamentosEstatisticaPessoa;
+import br.com.lucascosta.lcmoneyapi.mail.Mailer;
 import br.com.lucascosta.lcmoneyapi.model.Lancamento;
 import br.com.lucascosta.lcmoneyapi.model.Pessoa;
+import br.com.lucascosta.lcmoneyapi.model.Usuario;
 import br.com.lucascosta.lcmoneyapi.repository.LancamentoRepository;
 import br.com.lucascosta.lcmoneyapi.repository.PessoaRepository;
+import br.com.lucascosta.lcmoneyapi.repository.UsuarioRepository;
 import br.com.lucascosta.lcmoneyapi.service.exception.PessoaInexistenteOuInativaException;
 
 import org.springframework.beans.BeanUtils;
@@ -27,8 +30,17 @@ public class LancamentoService {
 
     @Autowired
     private PessoaRepository pessoaRepository;
+
     @Autowired
     private LancamentoRepository lancamentoRepository;
+
+    @Autowired
+    private UsuarioRepository usuarioRepository;
+
+    @Autowired
+    private Mailer mailer;
+
+    private static final String DESTINATARIOS = "ROLE_PESQUISAR_LANCAMENTO";
 
     public Lancamento salvar(Lancamento lancamento) {
         Pessoa pessoa = pessoaRepository.findById(lancamento.getPessoa().getId()).orElse(null);
@@ -87,7 +99,10 @@ public class LancamentoService {
      */
 
     @Scheduled(cron = "0 0 6 8 * *")
-    public void notificarLancamentosVencidos(){
+    public void notificarLancamentosVencidos() {
+        List<Lancamento> vencidos = lancamentoRepository.findByDataVencimentoLessThanEqualDataPagamentoIsNull(LocalDate.now());
+        List<Usuario> destinatarios = usuarioRepository.findByPermissoesDescricao(DESTINATARIOS);
 
+        mailer.avisarSobreLancamentosVencidos(vencidos, destinatarios);
     }
 }
