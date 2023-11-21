@@ -8,5 +8,5 @@ import java.time.LocalDate;
 import java.util.List;
 
 public interface LancamentoRepository extends JpaRepository<Lancamento, Long> , LancamentoRepositoryQuery {
-    List<Lancamento> findByDataVencimentoLessThanEqualDataPagamentoIsNull(LocalDate data);
+    List<Lancamento> findByDataVencimentoLessThanEqualAndDataPagamentoIsNull(LocalDate data);
 }

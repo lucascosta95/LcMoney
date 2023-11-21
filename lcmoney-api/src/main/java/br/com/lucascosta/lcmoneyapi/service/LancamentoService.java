@@ -100,7 +100,7 @@ public class LancamentoService {
 
     @Scheduled(cron = "0 0 6 8 * *")
     public void notificarLancamentosVencidos() {
-        List<Lancamento> vencidos = lancamentoRepository.findByDataVencimentoLessThanEqualDataPagamentoIsNull(LocalDate.now());
+        List<Lancamento> vencidos = lancamentoRepository.findByDataVencimentoLessThanEqualAndDataPagamentoIsNull(LocalDate.now());
         List<Usuario> destinatarios = usuarioRepository.findByPermissoesDescricao(DESTINATARIOS);
 
         mailer.avisarSobreLancamentosVencidos(vencidos, destinatarios);
