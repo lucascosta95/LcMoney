@@ -1,6 +1,7 @@
 package br.com.lucascosta.lcmoneyapi.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -43,6 +44,11 @@ public class Lancamento {
     @ManyToOne
     @JoinColumn(name = "id_pessoa")
     private Pessoa pessoa;
+
+    @JsonIgnore
+    public boolean isReceita() {
+        return TipoLancamento.RECEITA.equals(this.tipo);
+    }
 
     public Long getId() {
         return id;
