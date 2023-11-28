@@ -35,7 +35,7 @@ public class CategoriaResource {
     @PreAuthorize("hasAuthority('ROLE_CADASTRAR_CATEGORIA') and hasAuthority('SCOPE_read')")
     public ResponseEntity<Categoria> criarCategoria(@Valid @RequestBody Categoria categoria, HttpServletResponse response) {
 
-        Categoria categoriaSalva = categoriaRepository.save(categoria);
+        var categoriaSalva = categoriaRepository.save(categoria);
         publisher.publishEvent(new RecursoCriadoEvent(this, response, categoriaSalva.getId()));
 
         return ResponseEntity.status(HttpStatus.CREATED).body(categoriaSalva);
@@ -44,7 +44,7 @@ public class CategoriaResource {
     @GetMapping("/{id}")
     @PreAuthorize("hasAuthority('ROLE_PESQUISAR_CATEGORIA') and hasAuthority('SCOPE_read')")
     public ResponseEntity<Categoria> buscarPorId(@PathVariable Long id) {
-        Categoria categoria = categoriaRepository.findById(id).orElse(null);
+        var categoria = categoriaRepository.findById(id).orElse(null);
         return categoria != null ? ResponseEntity.ok(categoria) : ResponseEntity.notFound().build();
     }
 }

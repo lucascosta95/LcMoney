@@ -14,20 +14,19 @@ public class PessoaService {
     private PessoaRepository pessoaRepository;
 
     public Pessoa atualizarPessoa(Long id, Pessoa pessoa) {
-        Pessoa pessoaSalva = buscarPessoaPeloId(id);
+        var pessoaSalva = buscarPessoaPeloId(id);
         BeanUtils.copyProperties(pessoa, pessoaSalva, "id");
         return pessoaRepository.save(pessoaSalva);
     }
 
-
     public void atualizarPropriedadeAtivoPessoa(Long id, Boolean ativo) {
-        Pessoa pessoaSalva = buscarPessoaPeloId(id);
+        var pessoaSalva = buscarPessoaPeloId(id);
         pessoaSalva.setAtivo(ativo);
         pessoaRepository.save(pessoaSalva);
     }
 
     public Pessoa buscarPessoaPeloId(Long id) {
-        Pessoa pessoaSalva = pessoaRepository.findById(id).orElseThrow(() -> new EmptyResultDataAccessException(1));
+        var pessoaSalva = pessoaRepository.findById(id).orElseThrow(() -> new EmptyResultDataAccessException(1));
         return pessoaSalva;
     }
 }

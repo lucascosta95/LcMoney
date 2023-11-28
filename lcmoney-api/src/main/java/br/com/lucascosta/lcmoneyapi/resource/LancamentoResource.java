@@ -53,7 +53,7 @@ public class LancamentoResource {
     @GetMapping("/{id}")
     @PreAuthorize("hasAuthority('ROLE_PESQUISAR_LANCAMENTO') and hasAuthority('SCOPE_read')")
     public ResponseEntity<Lancamento> buscarPorId(@PathVariable Long id) {
-        Lancamento lancamento = lancamentoRepository.findById(id).orElse(null);
+        var lancamento = lancamentoRepository.findById(id).orElse(null);
         return lancamento != null ? ResponseEntity.ok(lancamento) : ResponseEntity.notFound().build();
     }
 
@@ -61,7 +61,7 @@ public class LancamentoResource {
     @PreAuthorize("hasAuthority('ROLE_CADASTRAR_LANCAMENTO') and hasAuthority('SCOPE_write')")
     public ResponseEntity<Lancamento> criarLancamento(@Valid @RequestBody Lancamento lancamento, HttpServletResponse response) {
 
-        Lancamento lancamentoSalvo = lancamentoService.salvar(lancamento);
+        var lancamentoSalvo = lancamentoService.salvar(lancamento);
         publisher.publishEvent(new RecursoCriadoEvent(this, response, lancamentoSalvo.getId()));
 
         return ResponseEntity.status(HttpStatus.CREATED).body(lancamentoSalvo);
@@ -78,7 +78,7 @@ public class LancamentoResource {
     @PreAuthorize("hasAuthority('ROLE_CADASTRAR_LANCAMENTO')")
     public ResponseEntity<Lancamento> atualizar(@PathVariable Long id, @Valid @RequestBody Lancamento lancamento) {
         try {
-            Lancamento lancamentoSalvo = lancamentoService.atualizar(id, lancamento);
+            var lancamentoSalvo = lancamentoService.atualizar(id, lancamento);
             return ResponseEntity.ok(lancamentoSalvo);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.notFound().build();
@@ -89,13 +89,13 @@ public class LancamentoResource {
 
     @GetMapping("/estatisticas/por-categoria")
     @PreAuthorize("hasAuthority('ROLE_PESQUISAR_LANCAMENTO') and hasAuthority('SCOPE_read')")
-    public List<LancamentosEstatisticaCategoria> porCategoria (){
+    public List<LancamentosEstatisticaCategoria> porCategoria() {
         return this.lancamentoRepository.porCategoria(LocalDate.now());
     }
 
     @GetMapping("/estatisticas/por-dia")
     @PreAuthorize("hasAuthority('ROLE_PESQUISAR_LANCAMENTO') and hasAuthority('SCOPE_read')")
-    public List<LancamentosEstatisticaDia> porDia (){
+    public List<LancamentosEstatisticaDia> porDia() {
         return this.lancamentoRepository.porDia(LocalDate.now());
     }
 

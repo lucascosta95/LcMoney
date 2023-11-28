@@ -49,7 +49,7 @@ public class RefreshTokenCookiePreProcessorFilter implements Filter {
         Filter.super.destroy();
     }
 
-    static class MyServletRequestWrapper extends HttpServletRequestWrapper{
+    static class MyServletRequestWrapper extends HttpServletRequestWrapper {
 
         private String refreshToken;
 

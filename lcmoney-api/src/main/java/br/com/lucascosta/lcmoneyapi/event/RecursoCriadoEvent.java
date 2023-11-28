@@ -1,9 +1,13 @@
 package br.com.lucascosta.lcmoneyapi.event;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.context.ApplicationEvent;
 
 import javax.servlet.http.HttpServletResponse;
 
+@Getter
+@Setter
 public class RecursoCriadoEvent extends ApplicationEvent {
 
     private HttpServletResponse response;
@@ -13,13 +17,5 @@ public class RecursoCriadoEvent extends ApplicationEvent {
         super(source);
         this.response = response;
         this.id = id;
-    }
-
-    public HttpServletResponse getResponse() {
-        return response;
-    }
-
-    public Long getId() {
-        return id;
     }
 }

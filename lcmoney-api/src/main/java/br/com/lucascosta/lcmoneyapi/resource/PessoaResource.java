@@ -35,15 +35,14 @@ public class PessoaResource {
     @GetMapping("/{id}")
     @PreAuthorize("hasAuthority('ROLE_PESQUISAR_PESSOA') and hasAuthority('SCOPE_read')")
     public ResponseEntity<Pessoa> buscarPorId(@PathVariable Long id) {
-        Pessoa pessoa = pessoaRepository.findById(id).orElse(null);
+        var pessoa = pessoaRepository.findById(id).orElse(null);
         return pessoa != null ? ResponseEntity.ok(pessoa) : ResponseEntity.notFound().build();
     }
 
     @PostMapping
     @PreAuthorize("hasAuthority('ROLE_CADASTRAR_PESSOA') and hasAuthority('SCOPE_write')")
     public ResponseEntity<Pessoa> criarPessoa(@Valid @RequestBody Pessoa pessoa, HttpServletResponse response) {
-
-        Pessoa pessoaSalva = pessoaRepository.save(pessoa);
+        var pessoaSalva = pessoaRepository.save(pessoa);
         publisher.publishEvent(new RecursoCriadoEvent(this, response, pessoaSalva.getId()));
 
         return ResponseEntity.status(HttpStatus.CREATED).body(pessoaSalva);
@@ -59,7 +58,7 @@ public class PessoaResource {
     @PutMapping("/{id}")
     @PreAuthorize("hasAuthority('ROLE_CADASTRAR_PESSOA') and hasAuthority('SCOPE_write')")
     public ResponseEntity<Pessoa> atualizarPessoa(@PathVariable Long id, @Valid @RequestBody Pessoa pessoa, HttpServletResponse response) {
-        Pessoa pessoaAlterada = pessoaService.atualizarPessoa(id, pessoa);
+        var pessoaAlterada = pessoaService.atualizarPessoa(id, pessoa);
         return ResponseEntity.ok(pessoaAlterada);
     }
 

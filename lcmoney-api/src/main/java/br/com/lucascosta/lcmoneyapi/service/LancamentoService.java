@@ -1,30 +1,28 @@
 package br.com.lucascosta.lcmoneyapi.service;
 
-import br.com.lucascosta.lcmoneyapi.dto.LancamentosEstatisticaPessoa;
 import br.com.lucascosta.lcmoneyapi.mail.Mailer;
 import br.com.lucascosta.lcmoneyapi.model.Lancamento;
 import br.com.lucascosta.lcmoneyapi.model.Pessoa;
-import br.com.lucascosta.lcmoneyapi.model.Usuario;
 import br.com.lucascosta.lcmoneyapi.repository.LancamentoRepository;
 import br.com.lucascosta.lcmoneyapi.repository.PessoaRepository;
 import br.com.lucascosta.lcmoneyapi.repository.UsuarioRepository;
 import br.com.lucascosta.lcmoneyapi.service.exception.PessoaInexistenteOuInativaException;
-
+import lombok.extern.slf4j.Slf4j;
+import net.sf.jasperreports.engine.JasperExportManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import java.io.InputStream;
 import java.sql.Date;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Optional;
 
-import net.sf.jasperreports.engine.JasperExportManager;
-import net.sf.jasperreports.engine.JasperFillManager;
-import net.sf.jasperreports.engine.JasperPrint;
-import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
-
+@Slf4j
 @Service
 public class LancamentoService {
 
@@ -43,7 +41,7 @@ public class LancamentoService {
     private static final String DESTINATARIOS = "ROLE_PESQUISAR_LANCAMENTO";
 
     public Lancamento salvar(Lancamento lancamento) {
-        Pessoa pessoa = pessoaRepository.findById(lancamento.getPessoa().getId()).orElse(null);
+        var pessoa = pessoaRepository.findById(lancamento.getPessoa().getId()).orElse(null);
 
         if (pessoa == null || pessoa.isInativa()) {
             throw new PessoaInexistenteOuInativaException();
@@ -53,7 +51,7 @@ public class LancamentoService {
     }
 
     public Lancamento atualizar(Long id, Lancamento lancamento) {
-        Lancamento lancamentoSalvo = buscarLancamentoExistente(id);
+        var lancamentoSalvo = buscarLancamentoExistente(id);
         if (!lancamento.getPessoa().equals(lancamentoSalvo.getPessoa())) {
             validarPessoa(lancamento);
         }
@@ -79,15 +77,15 @@ public class LancamentoService {
     }
 
     public byte[] relatorioPorPessoa(LocalDate inicio, LocalDate fim) throws Exception {
-        List<LancamentosEstatisticaPessoa> dados = lancamentoRepository.porPessoa(inicio, fim);
+        var dados = lancamentoRepository.porPessoa(inicio, fim);
 
-        Map<String, Object> parametros = new HashMap<>();
+        var parametros = new HashMap<String, Object>();
         parametros.put("DT_INICIO", Date.valueOf(inicio));
         parametros.put("DT_FIM", Date.valueOf(fim));
         parametros.put("REPORT_LOCALE", new Locale("pt", "BR"));
 
-        InputStream inputStream = this.getClass().getResourceAsStream("/relatorios/lancamentos-por-pessoa.jasper");
-        JasperPrint jasperPrint = JasperFillManager.fillReport(inputStream, parametros,
+        var inputStream = this.getClass().getResourceAsStream("/relatorios/lancamentos-por-pessoa.jasper");
+        var jasperPrint = JasperFillManager.fillReport(inputStream, parametros,
                 new JRBeanCollectionDataSource(dados));
         return JasperExportManager.exportReportToPdf(jasperPrint);
     }
@@ -100,9 +98,23 @@ public class LancamentoService {
 
     @Scheduled(cron = "0 0 6 8 * *")
     public void notificarLancamentosVencidos() {
-        List<Lancamento> vencidos = lancamentoRepository.findByDataVencimentoLessThanEqualAndDataPagamentoIsNull(LocalDate.now());
-        List<Usuario> destinatarios = usuarioRepository.findByPermissoesDescricao(DESTINATARIOS);
+        log.info("Preparando envio de e-mails sobre aviso de lançamentos vencidos.");
+
+        var vencidos = lancamentoRepository.findByDataVencimentoLessThanEqualAndDataPagamentoIsNull(LocalDate.now());
+        if (vencidos.isEmpty()) {
+            log.info("Sem lançamentos vencidos para envio");
+            return;
+        }
+
+        log.info("Existem {} lançamentos vencidos.", vencidos.size());
+
+        var destinatarios = usuarioRepository.findByPermissoesDescricao(DESTINATARIOS);
+        if (destinatarios.isEmpty()) {
+            log.warn("Existem lançamentos vencidos, porém não foram encontrados destinatarios");
+            return;
+        }
 
         mailer.avisarSobreLancamentosVencidos(vencidos, destinatarios);
+        log.info("Envio de e-mails concluidos!");
     }
 }

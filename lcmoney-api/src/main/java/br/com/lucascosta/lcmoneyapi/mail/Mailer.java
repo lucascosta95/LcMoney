@@ -1,8 +1,5 @@
 package br.com.lucascosta.lcmoneyapi.mail;
 
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeMessage;
-
 import br.com.lucascosta.lcmoneyapi.model.Lancamento;
 import br.com.lucascosta.lcmoneyapi.model.Usuario;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +9,7 @@ import org.springframework.stereotype.Component;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
+import javax.mail.MessagingException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -28,27 +26,27 @@ public class Mailer {
     private TemplateEngine thymeleaf;
 
     public void avisarSobreLancamentosVencidos(List<Lancamento> vencidos, List<Usuario> destinatarios) {
-        Map<String, Object> variaveis = new HashMap<>();
+        var variaveis = new HashMap<String, Object>();
 
         variaveis.put("lancamentos", vencidos);
-        List<String> emails = destinatarios.stream().map(Usuario::getEmail).collect(Collectors.toList());
+        var emails = destinatarios.stream().map(Usuario::getEmail).collect(Collectors.toList());
 
         this.enviarEmail("email-remetente@seu-provedor.com.br", emails, "Lançamentos Vencidos", "mail/aviso-lancamentos-vencidos", variaveis);
     }
 
     public void enviarEmail(String remetente, List<String> destinatarios, String assunto, String template, Map<String, Object> variaveis) {
-        Context context = new Context(new Locale("pt", "BR"));
+        var context = new Context(new Locale("pt", "BR"));
         variaveis.forEach((key, value) -> context.setVariable(key, value));
 
-        String mensagem = thymeleaf.process(template, context);
+        var mensagem = thymeleaf.process(template, context);
         enviarEmail(remetente, destinatarios, assunto, mensagem);
     }
 
     public void enviarEmail(String remetente, List<String> destinatarios, String assunto, String mensagem) {
         try {
 
-            MimeMessage mimeMessage = javaMailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, "UTF-8");
+            var mimeMessage = javaMailSender.createMimeMessage();
+            var helper = new MimeMessageHelper(mimeMessage, "UTF-8");
 
             helper.setFrom(remetente);
             helper.setTo(destinatarios.toArray(new String[destinatarios.size()]));
