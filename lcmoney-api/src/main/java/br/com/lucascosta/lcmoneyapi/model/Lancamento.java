@@ -21,6 +21,7 @@ public class Lancamento {
     private Long id;
 
     private String descricao;
+
     @NotNull
     @Column(name = "data_vencimento")
     @JsonFormat(pattern = "dd/MM/yyyy")

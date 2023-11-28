@@ -5,7 +5,9 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 @Getter
 @Setter
@@ -16,12 +18,19 @@ public class Pessoa {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @NotNull
     private String nome;
+
     @Embedded
     private Endereco endereco;
+
     @NotNull
     private Boolean ativo;
+
+    @Valid
+    @OneToMany(mappedBy = "pessoa", cascade = CascadeType.ALL)
+    private List<Contato> contatos;
 
     @JsonIgnore
     @Transient
