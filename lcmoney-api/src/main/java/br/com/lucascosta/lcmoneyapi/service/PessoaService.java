@@ -15,7 +15,12 @@ public class PessoaService {
 
     public Pessoa atualizarPessoa(Long id, Pessoa pessoa) {
         var pessoaSalva = buscarPessoaPeloId(id);
-        BeanUtils.copyProperties(pessoa, pessoaSalva, "id");
+
+        pessoaSalva.getContatos().clear();
+        pessoaSalva.getContatos().addAll(pessoa.getContatos());
+        pessoaSalva.getContatos().forEach(c -> c.setPessoa(pessoaSalva));
+
+        BeanUtils.copyProperties(pessoa, pessoaSalva, "id", "contatos");
         return pessoaRepository.save(pessoaSalva);
     }
 
@@ -26,7 +31,11 @@ public class PessoaService {
     }
 
     public Pessoa buscarPessoaPeloId(Long id) {
-        var pessoaSalva = pessoaRepository.findById(id).orElseThrow(() -> new EmptyResultDataAccessException(1));
-        return pessoaSalva;
+        return pessoaRepository.findById(id).orElseThrow(() -> new EmptyResultDataAccessException(1));
+    }
+
+    public Pessoa salvar(Pessoa pessoa) {
+        pessoa.getContatos().forEach(c -> c.setPessoa(pessoa));
+        return pessoaRepository.save(pessoa);
     }
 }
