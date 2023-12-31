@@ -29,8 +29,8 @@ public class Pessoa {
     @NotNull
     private Boolean ativo;
 
-    @JsonIgnoreProperties("pessoa")
     @Valid
+    @JsonIgnoreProperties("pessoa")
     @OneToMany(mappedBy = "pessoa", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Contato> contatos;
 

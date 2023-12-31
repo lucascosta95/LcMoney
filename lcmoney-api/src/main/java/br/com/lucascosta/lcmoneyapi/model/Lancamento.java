@@ -2,6 +2,7 @@ package br.com.lucascosta.lcmoneyapi.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -47,6 +48,7 @@ public class Lancamento {
 
     @NotNull
     @ManyToOne
+    @JsonIgnoreProperties("contatos")
     @JoinColumn(name = "id_pessoa")
     private Pessoa pessoa;
 
