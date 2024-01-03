@@ -19,9 +19,12 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -85,6 +88,17 @@ public class LancamentoResource {
         }
     }
 
+    @PostMapping("/anexo")
+    @PreAuthorize("hasAuthority('ROLE_CADASTRAR_LANCAMENTO') and hasAuthority('SCOPE_write')")
+    public String uploadAnexo(@RequestParam MultipartFile anexo) throws IOException {
+
+        var out = new FileOutputStream("C:\\Users\\User\\OneDrive\\Área de Trabalho\\anexo--" + anexo.getOriginalFilename());
+        out.write(anexo.getBytes());
+        out.close();
+
+        return "ok";
+    }
+
     // Estatisticas
 
     @GetMapping("/estatisticas/por-categoria")
@@ -110,6 +124,5 @@ public class LancamentoResource {
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_PDF_VALUE)
                 .body(relatorio);
     }
-
 
 }
