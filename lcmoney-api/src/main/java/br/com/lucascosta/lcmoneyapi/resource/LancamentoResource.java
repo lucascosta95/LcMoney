@@ -8,6 +8,7 @@ import br.com.lucascosta.lcmoneyapi.repository.LancamentoRepository;
 import br.com.lucascosta.lcmoneyapi.repository.filter.LancamentoFilter;
 import br.com.lucascosta.lcmoneyapi.repository.projection.ResumoLancamento;
 import br.com.lucascosta.lcmoneyapi.service.LancamentoService;
+import br.com.lucascosta.lcmoneyapi.storage.S3;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
@@ -23,7 +24,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
@@ -40,6 +40,9 @@ public class LancamentoResource {
 
     @Autowired
     private ApplicationEventPublisher publisher;
+
+    @Autowired
+    private S3 s3;
 
     @GetMapping
     @PreAuthorize("hasAuthority('ROLE_PESQUISAR_LANCAMENTO') and hasAuthority('SCOPE_read')")
@@ -91,12 +94,7 @@ public class LancamentoResource {
     @PostMapping("/anexo")
     @PreAuthorize("hasAuthority('ROLE_CADASTRAR_LANCAMENTO') and hasAuthority('SCOPE_write')")
     public String uploadAnexo(@RequestParam MultipartFile anexo) throws IOException {
-
-        var out = new FileOutputStream("C:\\Users\\User\\OneDrive\\Área de Trabalho\\anexo--" + anexo.getOriginalFilename());
-        out.write(anexo.getBytes());
-        out.close();
-
-        return "ok";
+        return s3.salvarTemporariamente(anexo);
     }
 
     // Estatisticas
