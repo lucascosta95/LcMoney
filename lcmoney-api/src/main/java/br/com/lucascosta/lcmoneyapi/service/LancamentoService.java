@@ -7,6 +7,7 @@ import br.com.lucascosta.lcmoneyapi.repository.LancamentoRepository;
 import br.com.lucascosta.lcmoneyapi.repository.PessoaRepository;
 import br.com.lucascosta.lcmoneyapi.repository.UsuarioRepository;
 import br.com.lucascosta.lcmoneyapi.service.exception.PessoaInexistenteOuInativaException;
+import br.com.lucascosta.lcmoneyapi.storage.S3;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
@@ -15,6 +16,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.sql.Date;
 import java.time.LocalDate;
@@ -38,13 +40,16 @@ public class LancamentoService {
     @Autowired
     private Mailer mailer;
 
+    @Autowired
+    private S3 s3;
+
     private static final String DESTINATARIOS = "ROLE_PESQUISAR_LANCAMENTO";
 
     public Lancamento salvar(Lancamento lancamento) {
-        var pessoa = pessoaRepository.findById(lancamento.getPessoa().getId()).orElse(null);
+        validarPessoa(lancamento);
 
-        if (pessoa == null || pessoa.isInativa()) {
-            throw new PessoaInexistenteOuInativaException();
+        if(StringUtils.hasText(lancamento.getAnexo())){
+            s3.salvar(lancamento.getAnexo());
         }
 
         return lancamentoRepository.save(lancamento);
@@ -52,8 +57,15 @@ public class LancamentoService {
 
     public Lancamento atualizar(Long id, Lancamento lancamento) {
         var lancamentoSalvo = buscarLancamentoExistente(id);
+
         if (!lancamento.getPessoa().equals(lancamentoSalvo.getPessoa())) {
             validarPessoa(lancamento);
+        }
+
+        if (StringUtils.hasText(lancamento.getAnexo()) && !lancamento.getAnexo().equals(lancamentoSalvo.getAnexo())) {
+            s3.substituir(lancamentoSalvo.getAnexo(), lancamento.getAnexo());
+        } else if (!StringUtils.hasText(lancamento.getAnexo()) && StringUtils.hasText(lancamentoSalvo.getAnexo())) {
+            s3.remover(lancamento.getAnexo());
         }
 
         BeanUtils.copyProperties(lancamento, lancamentoSalvo, "id");
@@ -62,7 +74,7 @@ public class LancamentoService {
     }
 
     private void validarPessoa(Lancamento lancamento) {
-        Optional<Pessoa> pessoa = null;
+        Optional<Pessoa> pessoa = Optional.empty();
         if (lancamento.getPessoa().getId() != null) {
             pessoa = pessoaRepository.findById(lancamento.getPessoa().getId());
         }

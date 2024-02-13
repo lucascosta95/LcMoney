@@ -1,5 +1,6 @@
 package br.com.lucascosta.lcmoneyapi.resource;
 
+import br.com.lucascosta.lcmoneyapi.dto.Anexo;
 import br.com.lucascosta.lcmoneyapi.dto.LancamentosEstatisticaCategoria;
 import br.com.lucascosta.lcmoneyapi.dto.LancamentosEstatisticaDia;
 import br.com.lucascosta.lcmoneyapi.event.RecursoCriadoEvent;
@@ -19,7 +20,16 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
@@ -93,8 +103,9 @@ public class LancamentoResource {
 
     @PostMapping("/anexo")
     @PreAuthorize("hasAuthority('ROLE_CADASTRAR_LANCAMENTO') and hasAuthority('SCOPE_write')")
-    public String uploadAnexo(@RequestParam MultipartFile anexo) throws IOException {
-        return s3.salvarTemporariamente(anexo);
+    public Anexo uploadAnexo(@RequestParam MultipartFile anexo) throws IOException {
+        var nome = s3.salvarTemporariamente(anexo);
+        return new Anexo(nome, s3.configurarUrl(nome));
     }
 
     // Estatisticas
