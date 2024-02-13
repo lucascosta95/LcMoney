@@ -15,6 +15,8 @@ import { Title } from '@angular/platform-browser';
 import { AuthService } from '../seguranca/auth.service';
 import { JwtHelperService } from '@auth0/angular-jwt';
 import { NaoAutorizadoComponent } from './nao-autorizado.component';
+import { DashboardService } from '../dashboard/dashboard.service';
+import { CategoriaService } from '../categorias/categoria.service';
 
 registerLocaleData(localePt, 'pt-BR');
 
@@ -43,6 +45,8 @@ registerLocaleData(localePt, 'pt-BR');
     Title,
     LancamentoService,
     TranslateService,
+    CategoriaService,
+    DashboardService,
     MessageService, 
     ConfirmationService,
     DatePipe,
