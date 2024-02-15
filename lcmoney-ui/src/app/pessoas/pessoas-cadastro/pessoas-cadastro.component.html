@@ -1,65 +1,158 @@
 <div class="container">
-  <form autocomplete="off" (ngSubmit)="salvar()" [formGroup]="formulario">
-    <div class="grid">
+  <form #pessoasForm="ngForm" autocomplete="off" (ngSubmit)="salvar()">
 
+    <div class="grid">
       <div class="col-12">
-        <h1>{{edicao ? 'Edição de ' : 'Nova '}}Pessoa</h1>
+        <h1>{{ edicao ? 'Edição de' : 'Nova' }} Pessoa</h1>
       </div>
 
       <div class="col-12 p-fluid">
         <label>Nome</label>
-        <input pInputText type="text" name="nome" formControlName="nome">
+        <input pInputText type="text" name="nome" [(ngModel)]="pessoa.nome" #nome="ngModel" [required]="true"
+          minlength="5">
 
-       <app-message [control]="formulario.get('nome')" error="required" text="Informe o nome"></app-message>
-       <app-message [control]="formulario.get('nome')" error="minlength" text="Mínimo de {{ formulario.get('nome')?.errors?.['minlength']?.requiredLength }} caracteres"></app-message>
+        <app-message [control]="nome.control" error="required" text="Informe o nome"></app-message>
+        <app-message [control]="nome.control" error="minlength"
+          text="Mínimo de {{ nome.errors?.['minlength']?.requiredLength }} caracteres"></app-message>
       </div>
 
-      <div class="col-12 md:col-9 p-fluid" formGroupName="endereco">
+      <div class="col-12 md:col-9 p-fluid">
         <label>Logradouro</label>
-        <input pInputText type="text" name="logradouro" formControlName="logradouro">
-        <app-message [control]="formulario.get('endereco.logradouro')" error="required" text="Informe o logradouro"></app-message>
+        <input pInputText type="text" name="logradouro" [(ngModel)]="pessoa.endereco.logradouro" #logradouro="ngModel"
+          [required]="true">
+
+        <app-message [control]="logradouro.control" error="required" text="Informe o logradouro"></app-message>
       </div>
 
-      <div class="col-12 md:col-3 p-fluid" formGroupName="endereco">
-        <label>Numero</label>
-        <p-inputNumber name="numero" formControlName="numero"></p-inputNumber>
-        <app-message [control]="formulario.get('endereco.numero')" error="required" text="Informe o numero"></app-message>
+      <div class="col-12 md:col-3 p-fluid">
+        <label>Número</label>
+        <input pInputText type="text" name="numero" [(ngModel)]="pessoa.endereco.numero" #numero="ngModel"
+          [required]="true">
+
+        <app-message [control]="numero.control" error="required" text="Informe o número"></app-message>
       </div>
 
-      <div class="col-12 md:col-4 p-fluid" formGroupName="endereco">
+      <div class="col-12 md:col-4 p-fluid">
         <label>Complemento</label>
-        <input pInputText type="text" name="complemento" formControlName="complemento">
+        <input pInputText type="text" name="complemento" [(ngModel)]="pessoa.endereco.complemento">
       </div>
 
-      <div class="col-12 md:col-4 p-fluid" formGroupName="endereco">
+      <div class="col-12 md:col-4 p-fluid">
         <label>Bairro</label>
-        <input pInputText type="text" name="bairro"  formControlName="bairro">
-        <app-message [control]="formulario.get('endereco.bairro')" error="required" text="Informe o bairro"></app-message>
+        <input pInputText type="text" name="bairro" [(ngModel)]="pessoa.endereco.bairro" #bairro="ngModel"
+          [required]="true">
+
+        <app-message [control]="bairro.control" error="required" text="Informe o bairro"></app-message>
       </div>
 
-      <div class="col-12 md:col-4 p-fluid" formGroupName="endereco">
+      <div class="col-12 md:col-4 p-fluid">
         <label>CEP</label>
-        <p-inputMask mask="99.999-999" name="cep" formControlName="cep"></p-inputMask>
-        <app-message [control]="formulario.get('endereco.cep')" error="required" text="Informe um CEP"></app-message>
+        <p-inputMask name="cep" mask="99.999-999" [(ngModel)]="pessoa.endereco.cep" #cep="ngModel" [required]="true">
+        </p-inputMask>
+
+        <app-message [control]="cep.control" error="required" text="Informe o CEP"></app-message>
       </div>
 
-      <div class="col-12 md:col-6 p-fluid" formGroupName="endereco">
+      <div class="col-12 md:col-6 p-fluid">
         <label>Cidade</label>
-        <input pInputText type="text" name="cidade" formControlName="cidade">
-        <app-message [control]="formulario.get('endereco.cidade')" error="required" text="Informe a cidade"></app-message>
+        <input pInputText type="text" name="cidade" [(ngModel)]="pessoa.endereco.cidade" #cidade="ngModel"
+          [required]="true">
+
+        <app-message [control]="cidade.control" error="required" text="Informe a cidade"></app-message>
       </div>
 
-      <div class="col-12 md:col-6 p-fluid" formGroupName="endereco">
+      <div class="col-12 md:col-6 p-fluid">
         <label>Estado</label>
-        <input pInputText type="text" name="estado" formControlName="estado">
-        <app-message [control]="formulario.get('endereco.estado')" error="required" text="Informe o estado"></app-message>
+        <input pInputText type="text" name="estado" [(ngModel)]="pessoa.endereco.estado" #estado="ngModel"
+          [required]="true">
+
+        <app-message [control]="estado.control" error="required" text="Informe o estado"></app-message>
       </div>
 
       <div class="col-12">
-        <button pButton type="submit" label="Salvar" style="margin-right: .25em" [disabled]="formulario.invalid"></button>
-        <button pButton type="button" label="Novo" class="p-button-info" style="margin-right: .25em" (click)="novo()"></button>
-        <a routerLink ="/pessoas">Voltar para a pesquisa</a>
+        <p-panel header="Contatos">
+          <div class="grid">
+            <div class="col-12">
+              <button pButton label="Novo" icon="pi pi-plus" type="button" class="p-button-raised p-button-text"
+                (click)="prepararNovoContato()"></button>
+            </div>
+            <div class="col-12">
+              <p-table [value]="pessoa.contatos" [responsive]="true">
+                <ng-template pTemplate="header">
+                  <tr>
+                    <th>Nome</th>
+                    <th>E-mail</th>
+                    <th>Telefone</th>
+                    <th class="col-acoes-header"></th>
+                  </tr>
+                </ng-template>
+
+                <ng-template pTemplate="body" let-contato>
+                  <tr>
+                    <td>{{ contato.nome }}</td>
+                    <td>{{ contato.email }}</td>
+                    <td>{{ contato.telefone }}</td>
+                    <td class="col-acoes">
+                      <button pButton icon="pi pi-pencil" type="button" pTooltip="Editar"
+                        tooltipPosition="top"></button>
+
+                      <button pButton icon="pi pi-trash" type="button" pTooltip="Excluir"
+                        tooltipPosition="top"></button>
+                    </td>
+                  </tr>
+                </ng-template>
+
+                <ng-template pTemplate="emptymessage">
+                  <tr>
+                    <td colspan="4">
+                      Nenhum contato cadastrado
+                    </td>
+                  </tr>
+                </ng-template>
+              </p-table>
+            </div>
+          </div>
+        </p-panel>
+      </div>
+
+      <div class="col-12">
+        <button pButton type="submit" label="Salvar" [disabled]="pessoasForm.invalid"></button>
+        <button pButton type="button" label="Novo" class="p-button-info" (click)="novo(pessoasForm)"></button>
+
+        <a [routerLink]="['/pessoas']">Voltar para a pesquisa</a>
       </div>
     </div>
+
   </form>
+
 </div>
+
+<p-dialog header="Novo Contato" [(visible)]="exbindoFormularioContato" [modal]="true" *ngIf="contato" [style]="{width: '70vw'}">
+  <form #frmContato="ngForm" (ngSubmit)="adicionarContato(frmContato)">
+    <div class="col-12 p-fluid">
+      <label>Nome</label>
+      <input pInputText type="text" name="nome" required [(ngModel)]="contato.nome" #contatoNome="ngModel" />
+
+      <app-message [control]="contatoNome.control" error="required" text="Informe o nome"></app-message>
+    </div>
+
+    <div class="col-12 p-fluid">
+      <label>E-mail</label>
+      <input pInputText type="email" name="email" required email [(ngModel)]="contato.email" #contatoEmail="ngModel" />
+
+      <app-message [control]="contatoEmail.control" error="required" text="Informe o email"></app-message>
+      <app-message [control]="contatoEmail.control" error="email" text="Informe um e-mail válido"></app-message>
+    </div>
+
+    <div class="col-12 p-fluid">
+      <label>Telefone</label>
+      <p-inputMask name="telefone" [required]="true" [(ngModel)]="contato.telefone" mask="(99) 99999-999?9" #contatoTelefone="ngModel"></p-inputMask>
+
+      <app-message [control]="contatoTelefone.control" error="required" text="Informe o nome"></app-message>
+    </div>
+
+    <div class="col-12">
+      <button pButton type="submit" label="Confirmar" [disabled]="frmContato.invalid"></button>
+    </div>
+  </form>
+</p-dialog>

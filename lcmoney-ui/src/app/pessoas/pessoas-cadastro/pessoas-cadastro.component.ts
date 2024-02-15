@@ -1,9 +1,9 @@
 import { PessoasService } from './../pessoas.service';
 import { Component, OnInit } from '@angular/core';
-import { Pessoa } from 'src/app/core/model';
+import { Contato, Pessoa } from 'src/app/core/model';
 import { MessageService } from 'primeng/api';
 import { ErrorHandlerService } from 'src/app/core/error-handler.service';
-import { FormBuilder, FormGroup, NgForm, Validators } from '@angular/forms';
+import { NgForm } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Title } from '@angular/platform-browser';
 
@@ -13,7 +13,9 @@ import { Title } from '@angular/platform-browser';
   styleUrls: ['./pessoas-cadastro.component.css'],
 })
 export class PessoasCadastroComponent implements OnInit {
-  formulario!: FormGroup;
+  pessoa = new Pessoa();
+  exbindoFormularioContato = false;
+  contato?: Contato;
 
   constructor(
     private pessoaService: PessoasService,
@@ -21,55 +23,34 @@ export class PessoasCadastroComponent implements OnInit {
     private errorHandler: ErrorHandlerService,
     private route: ActivatedRoute,
     private router: Router,
-    private title: Title,
-    private formBuilder: FormBuilder
+    private title: Title
   ) {}
 
   ngOnInit() {
-    this.configurarFormulario();
-
     const idPessoa: number = this.route.snapshot.params['id'];
 
     if (idPessoa) {
       this.carregarPessoas(idPessoa);
-      this.title.setTitle('Edição de pessoa');
     } else {
       this.title.setTitle('Nova pessoa');
     }
   }
 
-  configurarFormulario() {
-    this.formulario = this.formBuilder.group({
-      id: [],
-      nome: [null, [Validators.required, Validators.minLength(5)]],
-      ativo: [true],
-      endereco: this.formBuilder.group({
-        logradouro: [null, Validators.required],
-        numero: [null, Validators.required],
-        complemento: [],
-        bairro: [null, Validators.required],
-        cep: [null, Validators.required],
-        cidade: [null, Validators.required],
-        estado: [null, Validators.required],
-      }),
-    });
-  }
-
   get edicao() {
-    return Boolean(this.formulario.get('id')!.value);
+    return Boolean(this.pessoa.id);
   }
 
   salvar() {
     if (this.edicao) {
-      this.atualizaPessoa();
+      this.atualizarPessoa();
     } else {
-      this.adicionaPessoa();
+      this.adicionarPessoa();
     }
   }
 
-  adicionaPessoa() {
+  adicionarPessoa() {
     this.pessoaService
-      .adicionar(this.formulario.value)
+      .adicionar(this.pessoa)
       .then(() => {
         this.messageService.add({
           severity: 'success',
@@ -81,17 +62,19 @@ export class PessoasCadastroComponent implements OnInit {
       .catch((erro) => this.errorHandler.handle(erro));
   }
 
-  atualizaPessoa() {
+  atualizarPessoa() {
     this.pessoaService
-      .atualizar(this.formulario.value)
+      .atualizar(this.pessoa)
       .then((pessoaAtualizada) => {
         if (pessoaAtualizada === undefined) return;
 
-        this.formulario.patchValue(pessoaAtualizada);
+        this.pessoa = pessoaAtualizada;
         this.messageService.add({
           severity: 'success',
           detail: 'Pessoa editada com sucesso!',
         });
+
+        this.atualizarTituloEdicao();
       })
       .catch((erro) => this.errorHandler.handle(erro));
   }
@@ -100,14 +83,43 @@ export class PessoasCadastroComponent implements OnInit {
     this.pessoaService
       .buscarPorId(id)
       .then((p) => {
-        this.formulario.patchValue(p);
+        this.pessoa = p;
+        this.atualizarTituloEdicao();
       })
       .catch((erro) => this.errorHandler.handle(erro));
   }
 
-  novo() {
-    this.formulario.reset();
-    this.formulario.patchValue(new Pessoa());
+  novo(form: NgForm) {
+    form.reset();
+
+    setTimeout(() => {
+      this.pessoa = new Pessoa();
+    }, 1);
+
     this.router.navigate(['/pessoas/novo']);
+  }
+
+  atualizarTituloEdicao() {
+    this.title.setTitle(`Edição de pessoa: ${this.pessoa.nome}`);
+  }
+
+  prepararNovoContato() {
+    this.exbindoFormularioContato = true;
+    this.contato = new Contato();
+  }
+
+  adicionarContato(frm: NgForm) {
+    this.pessoa.contatos.push(this.clonarContato(this.contato!));
+    this.exbindoFormularioContato = false;
+    frm.reset();
+  }
+
+  clonarContato(contato: Contato): Contato {
+    return new Contato(
+      contato.id,
+      contato.nome,
+      contato.email,
+      contato.telefone
+    );
   }
 }

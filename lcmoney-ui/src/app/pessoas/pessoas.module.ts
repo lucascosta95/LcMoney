@@ -5,22 +5,20 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { InputTextModule } from 'primeng/inputtext';
 import { ButtonModule } from 'primeng/button';
 import { TableModule } from 'primeng/table';
-import {TooltipModule} from 'primeng/tooltip';
-import {DropdownModule} from 'primeng/dropdown';
+import { TooltipModule } from 'primeng/tooltip';
+import { DropdownModule } from 'primeng/dropdown';
 import { InputNumberModule } from 'primeng/inputnumber';
-import {InputMaskModule} from 'primeng/inputmask';
+import { InputMaskModule } from 'primeng/inputmask';
 
 import { PessoasPesquisaComponent } from './pessoas-pesquisa/pessoas-pesquisa.component';
 import { PessoasCadastroComponent } from './pessoas-cadastro/pessoas-cadastro.component';
 import { SharedModule } from '../shared/shared.module';
 import { PessoasRoutingModule } from './pessoas-routing.module';
-
+import { PanelModule } from 'primeng/panel';
+import { DialogModule } from 'primeng/dialog';
 
 @NgModule({
-  declarations: [
-    PessoasPesquisaComponent,
-    PessoasCadastroComponent
-  ],
+  declarations: [PessoasPesquisaComponent, PessoasCadastroComponent],
   imports: [
     CommonModule,
     FormsModule,
@@ -33,8 +31,10 @@ import { PessoasRoutingModule } from './pessoas-routing.module';
     InputNumberModule,
     InputMaskModule,
     SharedModule,
-    PessoasRoutingModule
+    PanelModule,
+    DialogModule,
+    PessoasRoutingModule,
   ],
-  exports:[]
+  exports: [],
 })
-export class PessoasModule { }
+export class PessoasModule {}
