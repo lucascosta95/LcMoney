@@ -87,17 +87,15 @@
                   </tr>
                 </ng-template>
 
-                <ng-template pTemplate="body" let-contato>
+                <ng-template pTemplate="body" let-contato let-rowIndex="rowIndex">
                   <tr>
                     <td>{{ contato.nome }}</td>
                     <td>{{ contato.email }}</td>
                     <td>{{ contato.telefone }}</td>
                     <td class="col-acoes">
-                      <button pButton icon="pi pi-pencil" type="button" pTooltip="Editar"
-                        tooltipPosition="top"></button>
+                      <button pButton icon="pi pi-pencil" type="button" pTooltip="Editar" tooltipPosition="top" (click)="prepararEdicaoContato(contato, rowIndex)"></button>
 
-                      <button pButton icon="pi pi-trash" type="button" pTooltip="Excluir"
-                        tooltipPosition="top"></button>
+                      <button pButton icon="pi pi-trash" type="button" pTooltip="Excluir" tooltipPosition="top" (click)="removerContato(rowIndex)"></button>
                     </td>
                   </tr>
                 </ng-template>
@@ -128,7 +126,7 @@
 </div>
 
 <p-dialog header="Novo Contato" [(visible)]="exbindoFormularioContato" [modal]="true" *ngIf="contato" [style]="{width: '70vw'}">
-  <form #frmContato="ngForm" (ngSubmit)="adicionarContato(frmContato)">
+  <form #frmContato="ngForm" (ngSubmit)="confirmarContato(frmContato)">
     <div class="col-12 p-fluid">
       <label>Nome</label>
       <input pInputText type="text" name="nome" required [(ngModel)]="contato.nome" #contatoNome="ngModel" />
