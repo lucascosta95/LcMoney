@@ -14,16 +14,14 @@ import { Title } from '@angular/platform-browser';
   templateUrl: './lancamentos-cadastro.component.html',
   styleUrls: ['./lancamentos-cadastro.component.css'],
 })
-
 export class LancamentosCadastroComponent implements OnInit {
-  
   formulario!: FormGroup;
   categorias: any[] = [];
   pessoas: any[] = [];
 
   tipos = [
-    { label: "Receita", value: "RECEITA" },
-    { label: "Despesa", value: "DESPESA" },
+    { label: 'Receita', value: 'RECEITA' },
+    { label: 'Despesa', value: 'DESPESA' },
   ];
 
   constructor(
@@ -35,7 +33,7 @@ export class LancamentosCadastroComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private title: Title,
-    private formBuilder: FormBuilder,
+    private formBuilder: FormBuilder
   ) {}
 
   ngOnInit(): void {
@@ -43,18 +41,18 @@ export class LancamentosCadastroComponent implements OnInit {
 
     const idLancamento: number = this.route.snapshot.params['id'];
 
-    if(idLancamento){
+    if (idLancamento) {
       this.carregarLancamento(idLancamento);
       this.title.setTitle('Edição de lançamento');
     } else {
       this.title.setTitle('Novo lançamento');
     }
-    
+
     this.carregarCategorias();
     this.carregarPessoas();
   }
 
-  configurarFormulario(){
+  configurarFormulario() {
     this.formulario = this.formBuilder.group({
       id: [],
       tipo: ['RECEITA', Validators.required],
@@ -74,10 +72,20 @@ export class LancamentosCadastroComponent implements OnInit {
       }),
 
       observacao: [],
+      anexo: [],
+      urlAnexo: []
     });
   }
 
-  get edicao(){
+  get urlUploadAnexo() {
+    return this.lancamentoService.urlUploadAnexo();
+  }
+
+  get uploadHeaders() {
+    return this.lancamentoService.uploadHeaders();
+  }
+
+  get edicao() {
     return Boolean(this.formulario.get('id')!.value);
   }
 
@@ -105,23 +113,41 @@ export class LancamentosCadastroComponent implements OnInit {
       .catch((erro) => this.errorHandlerService.handle(erro));
   }
 
-  salvar(){
+  aoTerminarUploadAnexo(event: any) {
+    const anexo = event.originalEvent.body;
+    this.formulario.patchValue({
+      anexo: anexo.nome,
+      urlAnexo: anexo.url.replace('\\\\', 'https://')
+    });
+  }
 
-    if(this.edicao){
-      this.atualizarLancamento()
-    } else {
-      this.adicionarLancamento()
+  get nomeAnexo() {
+    const nome = this.formulario?.get('anexo')?.value;
+    if (nome) {
+      return nome.substring(nome.indexOf('_') + 1, nome.length);
     }
 
+    return '';
   }
 
-  carregarLancamento(id: number){
-    this.lancamentoService.buscarPorCodigo(id).then(lancamento => {
-      this.formulario.patchValue(lancamento)
-    }).catch(erro => this.errorHandlerService.handle(erro))
+  salvar() {
+    if (this.edicao) {
+      this.atualizarLancamento();
+    } else {
+      this.adicionarLancamento();
+    }
   }
 
-  atualizarLancamento(){
+  carregarLancamento(id: number) {
+    this.lancamentoService
+      .buscarPorCodigo(id)
+      .then((lancamento) => {
+        this.formulario.patchValue(lancamento);
+      })
+      .catch((erro) => this.errorHandlerService.handle(erro));
+  }
+
+  atualizarLancamento() {
     this.lancamentoService
       .atualizar(this.formulario.value)
       .then((lanc) => {
@@ -137,24 +163,23 @@ export class LancamentosCadastroComponent implements OnInit {
       .catch((erro) => this.errorHandlerService.handle(erro));
   }
 
-
   adicionarLancamento() {
     this.lancamentoService
       .adicionar(this.formulario.value)
-      .then(lancAdicionado => {
+      .then((lancAdicionado) => {
         this.messageService.add({
           severity: 'success',
           detail: 'Lançamento adicionado!',
         });
 
-        this.router.navigate(['/lancamentos', lancAdicionado?.id])
+        this.router.navigate(['/lancamentos', lancAdicionado?.id]);
       })
       .catch((erro) => this.errorHandlerService.handle(erro));
   }
 
-  novo(){
+  novo() {
     this.formulario.reset();
-    this.formulario.patchValue(new Lancamento())
-    this.router.navigate(['/lancamentos/novo'])
+    this.formulario.patchValue(new Lancamento());
+    this.router.navigate(['/lancamentos/novo']);
   }
 }
