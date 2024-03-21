@@ -11,6 +11,7 @@ import { InputNumberModule } from 'primeng/inputnumber';
 import { SelectButtonModule } from 'primeng/selectbutton';
 import { InputTextareaModule } from 'primeng/inputtextarea';
 import { FileUploadModule } from 'primeng/fileupload';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
 
 import { LancamentosPesquisaComponent } from './lancamentos-pesquisa/lancamentos-pesquisa.component';
 import { LancamentosCadastroComponent } from './lancamentos-cadastro/lancamentos-cadastro.component';
@@ -33,6 +34,7 @@ import { LancamentosRoutingModule } from './lancamentos-routing.module';
     InputNumberModule,
     CommonModule,
     SharedModule,
+    ProgressSpinnerModule,
     LancamentosRoutingModule,
   ],
   exports: [],

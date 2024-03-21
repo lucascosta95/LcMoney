@@ -18,6 +18,7 @@ export class LancamentosCadastroComponent implements OnInit {
   formulario!: FormGroup;
   categorias: any[] = [];
   pessoas: any[] = [];
+  uploadEmAndamento = false;
 
   tipos = [
     { label: 'Receita', value: 'RECEITA' },
@@ -73,7 +74,7 @@ export class LancamentosCadastroComponent implements OnInit {
 
       observacao: [],
       anexo: [],
-      urlAnexo: []
+      urlAnexo: [],
     });
   }
 
@@ -113,12 +114,17 @@ export class LancamentosCadastroComponent implements OnInit {
       .catch((erro) => this.errorHandlerService.handle(erro));
   }
 
+  antesUploadAnexo() {
+    this.uploadEmAndamento = true;
+  }
+
   aoTerminarUploadAnexo(event: any) {
     const anexo = event.originalEvent.body;
     this.formulario.patchValue({
       anexo: anexo.nome,
-      urlAnexo: anexo.url.replace('\\\\', 'https://')
+      urlAnexo: anexo.url.replace('\\\\', 'https://'),
     });
+    this.uploadEmAndamento = false;
   }
 
   get nomeAnexo() {
@@ -128,6 +134,21 @@ export class LancamentosCadastroComponent implements OnInit {
     }
 
     return '';
+  }
+
+  removerAnexo() {
+    this.formulario.patchValue({
+      anexo: null,
+      urlAnexo: null,
+    });
+  }
+
+  erroUpload(event: any) {
+    this.uploadEmAndamento = false;
+    this.messageService.add({
+      severity: 'error',
+      detail: 'Erro ao tentar enviar anexo!',
+    });
   }
 
   salvar() {
@@ -143,6 +164,13 @@ export class LancamentosCadastroComponent implements OnInit {
       .buscarPorCodigo(id)
       .then((lancamento) => {
         this.formulario.patchValue(lancamento);
+
+        if (this.formulario.get('urlAnexo')?.value)
+          this.formulario.patchValue({
+            urlAnexo: this.formulario
+              .get('urlAnexo')
+              ?.value.replace('\\\\', 'https://'),
+          });
       })
       .catch((erro) => this.errorHandlerService.handle(erro));
   }
