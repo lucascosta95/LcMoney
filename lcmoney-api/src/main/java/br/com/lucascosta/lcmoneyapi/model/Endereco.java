@@ -4,6 +4,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.Embeddable;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 
 @Getter
 @Setter
@@ -14,6 +16,8 @@ public class Endereco {
     private String complemento;
     private String bairro;
     private String cep;
-    private String cidade;
-    private String estado;
+
+    @ManyToOne
+    @JoinColumn(name = "id_cidade")
+    private Cidade cidade;
 }
