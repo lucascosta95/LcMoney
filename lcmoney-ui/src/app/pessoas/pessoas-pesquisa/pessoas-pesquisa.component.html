@@ -37,11 +37,11 @@
             </td>
             <td>
               <span class="p-column-title">Cidade</span>
-              {{ pessoas.endereco.cidade }}
+              {{ pessoas.endereco.cidade?.nome }}
             </td>
             <td class="col-data-content">
               <span class="p-column-title">Estado</span>
-              {{ pessoas.endereco.estado }}
+              {{ pessoas.endereco.cidade?.estado.nome }}
             </td>
             <td class="col-data-content">
               <span class="p-column-title">Status</span>

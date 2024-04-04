@@ -1,6 +1,6 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Pessoa } from '../core/model';
+import { Cidade, Estado, Pessoa } from '../core/model';
 import { environment } from 'src/environments/environment';
 
 export class PessoasFiltro {
@@ -13,10 +13,14 @@ export class PessoasFiltro {
   providedIn: 'root',
 })
 export class PessoasService {
-  pessoasURL!: string;
+  pessoasUrl!: string;
+  cidadesUrl!: string;
+  estadosUrl!: string;
 
   constructor(private http: HttpClient) {
-    this.pessoasURL = `${environment.apiURL}/pessoas`
+    this.pessoasUrl = `${environment.apiURL}/pessoas`;
+    this.cidadesUrl = `${environment.apiURL}/cidades`;
+    this.estadosUrl = `${environment.apiURL}/estados`;
   }
 
   pesquisar(filtro: PessoasFiltro): Promise<any> {
@@ -30,7 +34,7 @@ export class PessoasService {
     }
 
     return this.http
-      .get(`${this.pessoasURL}`, { params })
+      .get(`${this.pessoasUrl}`, { params })
       .toPromise()
       .then((response: any) => {
         const pessoas = response['content'];
@@ -46,38 +50,50 @@ export class PessoasService {
 
   listarTodas(): Promise<any> {
     return this.http
-      .get(this.pessoasURL)
+      .get(this.pessoasUrl)
       .toPromise()
       .then((response: any) => response['content']);
   }
 
   excluir(id: number): Promise<void> {
     return this.http
-      .delete(`${this.pessoasURL}/${id}`)
+      .delete(`${this.pessoasUrl}/${id}`)
       .toPromise()
       .then(() => undefined);
   }
 
   mudarStatus(id: number, ativo: boolean): Promise<void> {
     return this.http
-      .put<void>(`${this.pessoasURL}/${id}/ativo`, ativo)
+      .put<void>(`${this.pessoasUrl}/${id}/ativo`, ativo)
       .toPromise();
   }
 
   adicionar(pessoa: Pessoa) {
-    return this.http.post<Pessoa>(this.pessoasURL, pessoa).toPromise();
+    return this.http.post<Pessoa>(this.pessoasUrl, pessoa).toPromise();
   }
 
   atualizar(pessoa: Pessoa) {
     return this.http
-      .put<Pessoa>(`${this.pessoasURL}/${pessoa.id}`, pessoa)
+      .put<Pessoa>(`${this.pessoasUrl}/${pessoa.id}`, pessoa)
       .toPromise();
   }
 
   buscarPorId(id: Number): Promise<any> {
     return this.http
-      .get(`${this.pessoasURL}/${id}`)
+      .get(`${this.pessoasUrl}/${id}`)
       .toPromise()
       .then((response: any) => response);
+  }
+
+  listarEstados(): Promise<Estado[]> {
+    return <Promise<Estado[]>>this.http.get(this.estadosUrl).toPromise();
+  }
+
+  pesquisarCidades(estadoId: number): Promise<Cidade[]> {
+    const params = new HttpParams().set('estadoId', estadoId);
+
+    return <Promise<Cidade[]>>(
+      this.http.get(this.cidadesUrl, { params }).toPromise()
+    );
   }
 }

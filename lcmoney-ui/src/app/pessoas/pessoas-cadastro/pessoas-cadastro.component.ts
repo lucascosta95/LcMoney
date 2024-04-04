@@ -1,6 +1,6 @@
 import { PessoasService } from './../pessoas.service';
 import { Component, OnInit } from '@angular/core';
-import { Contato, Pessoa } from 'src/app/core/model';
+import { Contato, Estado, Pessoa } from 'src/app/core/model';
 import { MessageService } from 'primeng/api';
 import { ErrorHandlerService } from 'src/app/core/error-handler.service';
 import { NgForm } from '@angular/forms';
@@ -14,6 +14,9 @@ import { ActivatedRoute, Router } from '@angular/router';
 })
 export class PessoasCadastroComponent implements OnInit {
   pessoa = new Pessoa();
+  estados!: any[];
+  cidades!: any[];
+  estadoSelecionado: any;
 
   constructor(
     private pessoaService: PessoasService,
@@ -28,10 +31,12 @@ export class PessoasCadastroComponent implements OnInit {
     const idPessoa: number = this.route.snapshot.params['id'];
 
     if (idPessoa) {
-      this.carregarPessoas(idPessoa);
+      this.carregarPessoa(idPessoa);
     } else {
       this.title.setTitle('Nova pessoa');
     }
+
+    this.carregarEstados();
   }
 
   get edicao() {
@@ -77,11 +82,20 @@ export class PessoasCadastroComponent implements OnInit {
       .catch((erro) => this.errorHandler.handle(erro));
   }
 
-  carregarPessoas(id: number) {
+  carregarPessoa(id: number) {
     this.pessoaService
       .buscarPorId(id)
       .then((p) => {
         this.pessoa = p;
+        let endereco = this.pessoa.endereco;
+
+        this.estadoSelecionado = endereco.cidade
+          ? endereco.cidade.estado.id
+          : null;
+        if (this.estadoSelecionado) {
+          this.carregarCidades();
+        }
+
         this.atualizarTituloEdicao();
       })
       .catch((erro) => this.errorHandler.handle(erro));
@@ -99,5 +113,27 @@ export class PessoasCadastroComponent implements OnInit {
 
   atualizarTituloEdicao() {
     this.title.setTitle(`Edição de pessoa: ${this.pessoa.nome}`);
+  }
+
+  carregarEstados() {
+    return this.pessoaService
+      .listarEstados()
+      .then((estados) => {
+        this.estados = estados.map((e) => ({ label: e.nome, value: e.id }));
+      })
+      .catch((erro) => this.errorHandler.handle(erro));
+  }
+
+  carregarCidades() {
+    return this.pessoaService
+      .pesquisarCidades(this.estadoSelecionado)
+      .then((cidades) => {
+        this.cidades = cidades.map((c) => ({ label: c.nome, value: c.id }));
+
+        if (this.estadoSelecionado !== this.pessoa.endereco.cidade.estado.id) {
+          this.pessoa.endereco.cidade.id = undefined;
+        }
+      })
+      .catch((erro) => this.errorHandler.handle(erro));
   }
 }
