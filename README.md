@@ -44,7 +44,7 @@ Este é um projeto de Gestão Financeira desenvolvido como parte do curso Fullst
 
 ## Clonando o projeto
    ```bash
-   git clone https://github.com/seu-usuario/seu-repositorio.git](https://github.com/lucascosta95/LcMoney.git
+   git clone https://github.com/lucascosta95/LcMoney.git
 ```
 ## Observações
 Ao clonar o repositório, será necessário configurar as propriedades do banco de dados MySQL e conexão com o AWS S3 no arquivo application.properties do backend.
